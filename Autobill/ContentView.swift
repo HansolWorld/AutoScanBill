@@ -10,8 +10,26 @@ import VisionKit
 
 struct ContentView: View {
     @State var images: [UIImage] = []
+    
     var body: some View {
-        CameraView(images: $images)
+        ScrollView {
+            VStack(spacing: 20) {
+                ForEach(images, id:\.self) { image in
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                }
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle("Image Gallery")
+        .toolbar {
+            NavigationLink {
+                CameraView(images: $images)
+            } label: {
+                Image(systemName: "camera")
+            }
+        }
     }
 }
 
@@ -22,10 +40,12 @@ struct ContentView: View {
 
 struct CameraView: UIViewControllerRepresentable {
     @Binding var images: [UIImage]
+    @Environment(\.presentationMode) var presentationMode
     
     func makeUIViewController(context: Context) -> some UIViewController {
         let scanningBillVC = VNDocumentCameraViewController()
         scanningBillVC.delegate = context.coordinator
+        scanningBillVC.navigationController?.isNavigationBarHidden = true
         
         return scanningBillVC
     }
@@ -39,6 +59,7 @@ struct CameraView: UIViewControllerRepresentable {
     
     class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         var parent: CameraView
+        @Environment(\.presentationMode) var presentationMode
         
         init(_ cameraView: CameraView) {
             self.parent = cameraView
@@ -51,7 +72,8 @@ struct CameraView: UIViewControllerRepresentable {
                 self.parent.images.append(image)
             }
             
-            controller.dismiss(animated: true)
+            parent.presentationMode.wrappedValue.dismiss()
+//            controller.dismiss(animated: true, completion: nil)
         }
     }
 }
