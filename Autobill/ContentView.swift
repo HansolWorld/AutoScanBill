@@ -9,11 +9,12 @@ import SwiftUI
 import VisionKit
 
 struct ContentView: View {
+    let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     @State var images: [UIImage] = []
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            LazyVGrid(columns: gridItem) {
                 ForEach(images, id:\.self) { image in
                     Image(uiImage: image)
                         .resizable()
@@ -26,6 +27,7 @@ struct ContentView: View {
         .toolbar {
             NavigationLink {
                 CameraView(images: $images)
+                    .navigationBarBackButtonHidden()
             } label: {
                 Image(systemName: "camera")
             }
