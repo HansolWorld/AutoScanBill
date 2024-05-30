@@ -8,11 +8,40 @@
 import SwiftUI
 
 struct ImageScrollView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    var presentIndex: Int
+    @Binding var images: [UIImage]
+    @State private var scrollIndex: Int
+    
+    init(presentIndex: Int, images: Binding<[UIImage]>) {
+        self.presentIndex = presentIndex
+        self._images = images
+        self._scrollIndex = State(initialValue: presentIndex)
     }
-}
-
-#Preview {
-    ImageScrollView()
+    
+    var body: some View {
+        TabView(selection: $scrollIndex) {
+            ForEach(images.indices, id: \.self) { index in
+                Image(uiImage: images[index])
+                    .resizable()
+                    .frame(height: 450)
+                    .scaledToFill()
+                    .aspectRatio(contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .clipped()
+                    .padding(.horizontal, 20)
+                    .id(index)
+            }
+        }
+        .tabViewStyle(.page)
+        .toolbar {
+            Image(systemName: "trash")
+                .foregroundStyle(.white)
+                .onTapGesture {
+                    images.remove(at: scrollIndex)
+                }
+        }
+        .onAppear {
+            scrollIndex = presentIndex
+        }
+    }
 }
