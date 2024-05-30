@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    @State var images: [UIImage] = []
+    @State var images: [UIImage] = [.sampleBill1, .sampleBill2, .sampleBill3, .sampleBill4, .sampleBill5]
     
     var body: some View {
         NavigationView {
