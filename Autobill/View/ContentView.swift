@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    @State var images: [UIImage] = [.bobcat,.bullElk,.bullElkSparring,.coyoteAndBison]
+    @State var images: [UIImage] = []
     
     var body: some View {
         NavigationView {
