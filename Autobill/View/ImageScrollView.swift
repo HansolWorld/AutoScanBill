@@ -23,12 +23,11 @@ struct ImageScrollView: View {
             ForEach(images.indices, id: \.self) { index in
                 Image(uiImage: images[index])
                     .resizable()
-                    .frame(height: 450)
-                    .scaledToFill()
+                    .scaledToFit()
                     .aspectRatio(contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                     .clipped()
-                    .padding(.horizontal, 20)
+                    .padding(40)
                     .id(index)
             }
         }
