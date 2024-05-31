@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		DB1D829B2C08C83F000809F1 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D829A2C08C83F000809F1 /* CameraView.swift */; };
 		DB1D829F2C08CC04000809F1 /* ImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D829E2C08CC04000809F1 /* ImageScrollView.swift */; };
+		DBB9D43E2C0969DA00F789BC /* TextScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB9D43D2C0969DA00F789BC /* TextScanner.swift */; };
 		FFE4B8E42BD9433200411F5C /* AutobillApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE4B8E32BD9433200411F5C /* AutobillApp.swift */; };
 		FFE4B8E62BD9433200411F5C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFE4B8E52BD9433200411F5C /* ContentView.swift */; };
 		FFE4B8E82BD9433400411F5C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FFE4B8E72BD9433400411F5C /* Assets.xcassets */; };
@@ -19,6 +20,7 @@
 /* Begin PBXFileReference section */
 		DB1D829A2C08C83F000809F1 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		DB1D829E2C08CC04000809F1 /* ImageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageScrollView.swift; sourceTree = "<group>"; };
+		DBB9D43D2C0969DA00F789BC /* TextScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextScanner.swift; sourceTree = "<group>"; };
 		FFE4B8E02BD9433200411F5C /* Autobill.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Autobill.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FFE4B8E32BD9433200411F5C /* AutobillApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutobillApp.swift; sourceTree = "<group>"; };
 		FFE4B8E52BD9433200411F5C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -48,6 +50,14 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		DBB9D43C2C0969BE00F789BC /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				DBB9D43D2C0969DA00F789BC /* TextScanner.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		FFE4B8D72BD9433200411F5C = {
 			isa = PBXGroup;
 			children = (
@@ -68,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				FFE4B8E32BD9433200411F5C /* AutobillApp.swift */,
+				DBB9D43C2C0969BE00F789BC /* Utils */,
 				DB1D82992C08C822000809F1 /* View */,
 				FFE4B8F12BD94AB100411F5C /* LocalFileManager.swift */,
 				FFE4B8E72BD9433400411F5C /* Assets.xcassets */,
@@ -155,6 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FFE4B8E62BD9433200411F5C /* ContentView.swift in Sources */,
+				DBB9D43E2C0969DA00F789BC /* TextScanner.swift in Sources */,
 				FFE4B8E42BD9433200411F5C /* AutobillApp.swift in Sources */,
 				FFE4B8F22BD94AB100411F5C /* LocalFileManager.swift in Sources */,
 				DB1D829F2C08CC04000809F1 /* ImageScrollView.swift in Sources */,
