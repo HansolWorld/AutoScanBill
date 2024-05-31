@@ -54,6 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				DBB9D43D2C0969DA00F789BC /* TextScanner.swift */,
+				FFE4B8F12BD94AB100411F5C /* LocalFileManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -80,7 +81,6 @@
 				FFE4B8E32BD9433200411F5C /* AutobillApp.swift */,
 				DBB9D43C2C0969BE00F789BC /* Utils */,
 				DB1D82992C08C822000809F1 /* View */,
-				FFE4B8F12BD94AB100411F5C /* LocalFileManager.swift */,
 				FFE4B8E72BD9433400411F5C /* Assets.xcassets */,
 				FFE4B8E92BD9433400411F5C /* Preview Content */,
 			);
