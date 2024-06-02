@@ -5,6 +5,7 @@
 //  Created by apple on 4/24/24.
 //
 
+import SwiftData
 import SwiftUI
 
 @main
@@ -15,5 +16,6 @@ struct AutobillApp: App {
                 ContentView()
             }
         }
+        .modelContainer(for: BillImage.self)
     }
 }

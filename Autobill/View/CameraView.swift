@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import SwiftData
 import VisionKit
 
 struct CameraView: UIViewControllerRepresentable {
-    @Binding var images: [UIImage]
+    @Query(sort: \BillImage.createdDate, order: .forward)
+    private var billImages: [BillImage]
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.modelContext) private var context
     
     func makeUIViewController(context: Context) -> some UIViewController {
         let scanningBillVC = VNDocumentCameraViewController()
@@ -41,7 +44,7 @@ struct CameraView: UIViewControllerRepresentable {
             for pageNumber in 0..<scan.pageCount {
                 let image = scan.imageOfPage(at: pageNumber)
                 TextScanner.shared.scanText(from: image)
-                self.parent.images.append(image)
+                parent.addBillImage(image)
             }
             parent.presentationMode.wrappedValue.dismiss()
         }
@@ -49,5 +52,10 @@ struct CameraView: UIViewControllerRepresentable {
         func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
+    }
+    
+    func addBillImage(_ image: UIImage) {
+        let newImage = BillImage(image: image)
+        context.insert(newImage)
     }
 }

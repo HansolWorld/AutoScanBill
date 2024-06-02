@@ -5,19 +5,23 @@
 //  Created by apple on 4/24/24.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    @State var images: [UIImage] = [.sampleBill1, .sampleBill2, .sampleBill3, .sampleBill4, .sampleBill5]
+    
+    @Environment(\.modelContext) private var context
+    @Query(sort: \BillImage.createdDate, order: .forward)
+    private var billImages: [BillImage] 
+    private let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
         NavigationView {
             ScrollView {
                 LazyVGrid(columns: gridItem) {
-                    ForEach(images.indices, id: \.self) { index in
-                        NavigationLink(destination: ImageScrollView(presentIndex: index, images: $images)) {
-                            Image(uiImage: images[index])
+                    ForEach(billImages.indices, id: \.self) { index in
+                        NavigationLink(destination: ImageScrollView(presentIndex: index)) {
+                            Image(uiImage: billImages[index].image)
                                 .resizable()
                                 .scaledToFit()
                         }
@@ -29,7 +33,7 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem {
                     NavigationLink {
-                        CameraView(images: $images)
+                        CameraView()
                             .navigationBarBackButtonHidden()
                     } label: {
                         Image(systemName: "camera")
