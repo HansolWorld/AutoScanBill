@@ -10,10 +10,17 @@ import UIKit.UIImage
 
 @Model
 final class BillImage {
-    var image: UIImage
+    
+    @Attribute(.unique) private(set) var id = UUID()
+    
+    var imageData: Data
     private(set) var createdDate = Date()
     
+    var image: UIImage {
+        return UIImage(data: imageData) ?? UIImage(systemName: "photo.artframe")!
+    }
+    
     init(image: UIImage) {
-        self.image = image
+        self.imageData = image.jpegData(compressionQuality: 1.0) ?? Data()
     }
 }
