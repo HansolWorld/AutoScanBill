@@ -40,6 +40,7 @@ struct CameraView: UIViewControllerRepresentable {
         ) {
             for pageNumber in 0..<scan.pageCount {
                 let image = scan.imageOfPage(at: pageNumber)
+                TextScanner.shared.scanText(from: image)
                 self.parent.images.append(image)
             }
             parent.presentationMode.wrappedValue.dismiss()
