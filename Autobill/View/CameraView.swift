@@ -55,7 +55,9 @@ struct CameraView: UIViewControllerRepresentable {
     }
     
     func addBillImage(_ image: UIImage) {
-        let newImage = BillImage(image: image)
+        let totalAmountText = TextScanner.shared.text
+        let date = TextScanner.shared.date
+        let newImage = BillImage(image: image, totalAmountText: totalAmountText, date: date)
         context.insert(newImage)
     }
 }

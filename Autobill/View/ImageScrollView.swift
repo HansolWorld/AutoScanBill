@@ -25,14 +25,20 @@ struct ImageScrollView: View {
     var body: some View {
         TabView(selection: $scrollIndex) {
             ForEach(billImages.indices, id: \.self) { index in
-                Image(uiImage: billImages[index].image)
-                    .resizable()
-                    .scaledToFit()
-                    .aspectRatio(contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .clipped()
-                    .padding(40)
-                    .id(index)
+                VStack(spacing: .zero) {
+//                    TextField(billImages[index].totalAmountText)
+//                    TextEditor(text: .constant(billImages[index].totalAmountText))
+                    Text("결제일 \(billImages[index].date)")
+                    Text("\(billImages[index].totalAmountText) 원")
+                    Image(uiImage: billImages[index].image)
+                        .resizable()
+                        .scaledToFit()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .clipped()
+                        .padding(40)
+                        .id(index)
+                }
             }
         }
         .tabViewStyle(.page)
