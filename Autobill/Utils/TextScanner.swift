@@ -10,10 +10,13 @@ import Vision
 
 final class TextScanner {
     static let shared = TextScanner()
-    
+    var text: String = ""
+    var date: String = ""
     private init() { }
     
     func scanText(from image: UIImage) {
+        text = ""
+        date = ""
         guard let cgImage = image.cgImage else {
             return
         }
@@ -40,7 +43,40 @@ final class TextScanner {
             return observation.topCandidates(1).first?.string
         }
         
-        // 추후 로컬 데이터 저장
-        print(recognizedStrings)
+        text = getTotalAmountText(from: recognizedStrings)
+        date = getDate(from: recognizedStrings)
+    }
+    
+    private func getTotalAmountText(from textArray: [String]) -> String {
+        var frequencyDict: [String: Int] = [:]
+
+        for string in textArray {
+            frequencyDict[string, default: 0] += 1
+        }
+
+        let sortedArray = frequencyDict.sorted(by: { $0.value > $1.value })
+        
+        return sortedArray.first?.key ?? ""
+    }
+    
+    private func getDate(from textArray: [String]) -> String {
+        let datePattern = #"(\d{4}-\d{2}-\d{2})"#
+
+        guard let regex = try? NSRegularExpression(pattern: datePattern) else {
+            return ""
+        }
+
+        let dateStrings = textArray.compactMap { string -> String? in
+            let range = NSRange(location: 0, length: string.utf16.count)
+            if let match = regex.firstMatch(in: string, options: [], range: range) {
+                // 매칭된 부분에서 첫 번째 캡처 그룹 (yyyy-MM-dd) 추출
+                if let dateRange = Range(match.range(at: 1), in: string) {
+                    return String(string[dateRange])
+                }
+            }
+            return nil
+        }
+        
+        return dateStrings.first ?? ""
     }
 }

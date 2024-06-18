@@ -5,21 +5,35 @@
 //  Created by apple on 4/24/24.
 //
 
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    @State var images: [UIImage] = [.sampleBill1, .sampleBill2, .sampleBill3, .sampleBill4, .sampleBill5]
     
+    @Environment(\.modelContext) private var context
+    @Query(sort: \BillImage.date, order: .forward)
+    private var billImages: [BillImage]
+    private let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
+
     var body: some View {
         NavigationView {
             ScrollView {
-                LazyVGrid(columns: gridItem) {
-                    ForEach(images.indices, id: \.self) { index in
-                        NavigationLink(destination: ImageScrollView(presentIndex: index, images: $images)) {
-                            Image(uiImage: images[index])
-                                .resizable()
-                                .scaledToFit()
+                LazyVGrid(columns: gridItem, alignment: .leading, pinnedViews: .sectionHeaders) {
+                    ForEach(groupedBillImages.keys.sorted(), id: \.self) { month in
+                        Section(
+                            header: Text(month)
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 4)
+                                .background(Color.black.opacity(0.2))
+                        ) {
+                            ForEach(groupedBillImages[month]!.indices, id: \.self) { index in
+                                NavigationLink(destination: ImageScrollView(presentIndex: index)) {
+                                    Image(uiImage: groupedBillImages[month]![index].image)
+                                        .resizable()
+                                        .scaledToFit()
+                                }
+                            }
                         }
                     }
                 }
@@ -29,7 +43,7 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem {
                     NavigationLink {
-                        CameraView(images: $images)
+                        CameraView()
                             .navigationBarBackButtonHidden()
                     } label: {
                         Image(systemName: "camera")
@@ -46,5 +60,17 @@ struct ContentView: View {
                 }
             }
         }
+    }
+    
+    private var groupedBillImages: [String: [BillImage]] {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM"
+        
+        let grouped = Dictionary(grouping: billImages) { (billImage) -> String in
+            let dateComponents = billImage.date.components(separatedBy: "-")
+            return "\(dateComponents[0])-\(dateComponents[1])"
+        }
+        
+        return grouped
     }
 }

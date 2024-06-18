@@ -6,30 +6,39 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ImageScrollView: View {
-    var presentIndex: Int
-    @Binding var images: [UIImage]
-    @State private var scrollIndex: Int
     
-    init(presentIndex: Int, images: Binding<[UIImage]>) {
+    @Environment(\.modelContext) private var context
+    @State private var scrollIndex: Int
+    private var presentIndex: Int
+    
+    @Query(sort: \BillImage.createdDate, order: .forward)
+    private var billImages: [BillImage]
+    
+    init(presentIndex: Int) {
         self.presentIndex = presentIndex
-        self._images = images
         self._scrollIndex = State(initialValue: presentIndex)
     }
     
     var body: some View {
         TabView(selection: $scrollIndex) {
-            ForEach(images.indices, id: \.self) { index in
-                Image(uiImage: images[index])
-                    .resizable()
-                    .frame(height: 450)
-                    .scaledToFill()
-                    .aspectRatio(contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .clipped()
-                    .padding(.horizontal, 20)
-                    .id(index)
+            ForEach(billImages.indices, id: \.self) { index in
+                VStack(spacing: .zero) {
+//                    TextField(billImages[index].totalAmountText)
+//                    TextEditor(text: .constant(billImages[index].totalAmountText))
+                    Text("결제일 \(billImages[index].date)")
+                    Text("\(billImages[index].totalAmountText) 원")
+                    Image(uiImage: billImages[index].image)
+                        .resizable()
+                        .scaledToFit()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .clipped()
+                        .padding(40)
+                        .id(index)
+                }
             }
         }
         .tabViewStyle(.page)
@@ -37,11 +46,19 @@ struct ImageScrollView: View {
             Image(systemName: "trash")
                 .foregroundStyle(.white)
                 .onTapGesture {
-                    images.remove(at: scrollIndex)
+                    deleteBillImage(scrollIndex)
                 }
         }
         .onAppear {
             scrollIndex = presentIndex
+        }
+    }
+    
+    func deleteBillImage(_ index: Int) {
+        for image in billImages {
+            if image.id == billImages[index].id {
+                context.delete(billImages[index])
+            }
         }
     }
 }
