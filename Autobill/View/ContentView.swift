@@ -14,18 +14,14 @@ struct ContentView: View {
     @Query(sort: \BillImage.date, order: .forward)
     private var billImages: [BillImage]
     private let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-
+    
     var body: some View {
         NavigationView {
             ScrollView {
                 LazyVGrid(columns: gridItem, alignment: .leading, pinnedViews: .sectionHeaders) {
                     ForEach(groupedBillImages.keys.sorted(), id: \.self) { month in
                         Section(
-                            header: Text(month)
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 4)
-                                .background(Color.black.opacity(0.2))
+                            header: MonthHeaderView(month)
                         ) {
                             ForEach(groupedBillImages[month]!.indices, id: \.self) { index in
                                 NavigationLink(destination: ImageScrollView(presentIndex: index)) {
@@ -72,5 +68,44 @@ struct ContentView: View {
         }
         
         return grouped
+    }
+    
+    private func MonthHeaderView(_ month: String) -> some View {
+        HStack {
+            Text(month)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+                .background(Color.black.opacity(0.2))
+            
+            Spacer()
+            
+            NavigationLink {
+                PaperView(
+                    totalCost: Int(groupedBillImages[month]!.compactMap({ Double($0.totalAmountText )}).reduce(0, +)),
+                    month: Int(convertDateFormat(from: month) ?? "0") ?? 0,
+                    imageList: groupedBillImages[month]!.map({ $0.image })
+                )
+            } label: {
+                Image(systemName: "doc")
+                    .foregroundStyle(.white)
+            }
+        }
+    }
+    
+    func convertDateFormat(from originalDateString: String) -> String? {
+        let originalDateFormatter = DateFormatter()
+        originalDateFormatter.dateFormat = "yyyy-MM"
+        
+        let targetDateFormatter = DateFormatter()
+        targetDateFormatter.dateFormat = "MM"
+        
+        guard let date = originalDateFormatter.date(from: originalDateString) else {
+            return nil
+        }
+        
+        let monthString = targetDateFormatter.string(from: date)
+        
+        return monthString
     }
 }

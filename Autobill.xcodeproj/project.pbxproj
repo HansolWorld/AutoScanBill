@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		66DBFE022C803DE300B75C08 /* PaperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DBFE012C803DE300B75C08 /* PaperView.swift */; };
+		66DBFE052C804F1800B75C08 /* PDFRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DBFE042C804F1800B75C08 /* PDFRenderer.swift */; };
+		66DBFE072C80547000B75C08 /* PrintPagePresetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DBFE062C80547000B75C08 /* PrintPagePresetView.swift */; };
 		DB1D829B2C08C83F000809F1 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D829A2C08C83F000809F1 /* CameraView.swift */; };
 		DB1D829F2C08CC04000809F1 /* ImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1D829E2C08CC04000809F1 /* ImageScrollView.swift */; };
 		DBB9D43E2C0969DA00F789BC /* TextScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB9D43D2C0969DA00F789BC /* TextScanner.swift */; };
@@ -19,6 +22,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		66DBFE012C803DE300B75C08 /* PaperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperView.swift; sourceTree = "<group>"; };
+		66DBFE042C804F1800B75C08 /* PDFRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFRenderer.swift; sourceTree = "<group>"; };
+		66DBFE062C80547000B75C08 /* PrintPagePresetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintPagePresetView.swift; sourceTree = "<group>"; };
 		DB1D829A2C08C83F000809F1 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		DB1D829E2C08CC04000809F1 /* ImageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageScrollView.swift; sourceTree = "<group>"; };
 		DBB9D43D2C0969DA00F789BC /* TextScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextScanner.swift; sourceTree = "<group>"; };
@@ -42,12 +48,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		66DBFE032C804F0D00B75C08 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				66DBFE042C804F1800B75C08 /* PDFRenderer.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		DB1D82992C08C822000809F1 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				66DBFE032C804F0D00B75C08 /* ViewModel */,
 				FFE4B8E52BD9433200411F5C /* ContentView.swift */,
 				DB1D829E2C08CC04000809F1 /* ImageScrollView.swift */,
 				DB1D829A2C08C83F000809F1 /* CameraView.swift */,
+				66DBFE012C803DE300B75C08 /* PaperView.swift */,
+				66DBFE062C80547000B75C08 /* PrintPagePresetView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -170,9 +187,12 @@
 			files = (
 				FFE4B8E62BD9433200411F5C /* ContentView.swift in Sources */,
 				DBB9D43E2C0969DA00F789BC /* TextScanner.swift in Sources */,
+				66DBFE072C80547000B75C08 /* PrintPagePresetView.swift in Sources */,
 				FFE4B8E42BD9433200411F5C /* AutobillApp.swift in Sources */,
 				FFE4B8F22BD94AB100411F5C /* LocalFileManager.swift in Sources */,
 				DBB9D4762C0A188100F789BC /* BillImage.swift in Sources */,
+				66DBFE022C803DE300B75C08 /* PaperView.swift in Sources */,
+				66DBFE052C804F1800B75C08 /* PDFRenderer.swift in Sources */,
 				DB1D829F2C08CC04000809F1 /* ImageScrollView.swift in Sources */,
 				DB1D829B2C08C83F000809F1 /* CameraView.swift in Sources */,
 			);
@@ -308,7 +328,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Autobill/Preview Content\"";
-				DEVELOPMENT_TEAM = R92FDJTURC;
+				DEVELOPMENT_TEAM = T2V49UT755;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the Camera to allow you to scan bill";
@@ -339,7 +359,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Autobill/Preview Content\"";
-				DEVELOPMENT_TEAM = R92FDJTURC;
+				DEVELOPMENT_TEAM = T2V49UT755;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the Camera to allow you to scan bill";
