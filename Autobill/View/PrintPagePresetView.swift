@@ -13,7 +13,7 @@ struct PrintPagePresetView: View {
     let teamName: String
     let name: String
     let category: String
-    let totalCost: Int
+    let totalCost: String
     let month: Int
     var preview = false
     
@@ -50,14 +50,14 @@ struct PrintPagePresetView: View {
                     Image(uiImage: imageList[index])
                         .resizable()
                         .scaledToFit()
-                        .frame(height: preview ? 105 : 279.744)
+                        .frame(width: preview ? 56 : 198.4, height: preview ? 105 : 198.4 * 1.414)
                         .overlay(
                             Rectangle()
-                                .strokeBorder(.white, lineWidth: 1)
+                                .strokeBorder(.black, lineWidth: 1)
                         )
                 }
             }
-            .frame(maxWidth: .infinity)
+            .frame(idealWidth: preview ? nil : 595.2, maxWidth: .infinity)
         }
         .frame(width: preview ? nil : 595.2, height: preview ? nil : 841.8, alignment: .top) // A4 size
         .foregroundStyle(.black)

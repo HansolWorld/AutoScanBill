@@ -15,7 +15,7 @@ struct PaperView: View {
     @State private var teamName = ""
     @State private var name = ""
     @State private var category = "커피는"
-    let totalCost: Int
+    @State var totalCost: String
     let month: Int
     
     let columns = [
@@ -29,12 +29,13 @@ struct PaperView: View {
         VStack(alignment: .trailing) {
             HStack(spacing: 8) {
                 TextField("팀 이름", text: $teamName)
-
+                
                 TextField("이름", text: $name)
                 
                 TextField("커피는, 60계, 스텔라", text: $category)
                 
-                Text(totalCost.formatted(.number))
+                TextField("총 액", text: $totalCost)
+                    .keyboardType(.numberPad)
             }
             .font(.subheadline)
             .border(.black)
@@ -49,7 +50,7 @@ struct PaperView: View {
                 teamName: teamName,
                 name: name,
                 category: category,
-                totalCost: totalCost,
+                totalCost: formatNumber(Int(totalCost) ?? 0),
                 month: month,
                 preview: true
             )
@@ -109,21 +110,22 @@ struct PaperView: View {
         
         for index in 0..<convertToTotalPage(totalCount) {
             let view = UIHostingController(
-                rootView:             PrintPagePresetView(
-                    pageIndex: pageIndex,
-                    imageList: imageList,
-                    teamName: teamName,
-                    name: name,
-                    category: category,
-                    totalCost: totalCost,
-                    month: month
-                )
+                rootView:
+                    PrintPagePresetView(
+                        pageIndex: index,
+                        imageList: imageList,
+                        teamName: teamName,
+                        name: name,
+                        category: category,
+                        totalCost: totalCost,
+                        month: month
+                    )
             ).view!
             view.frame = CGRect(origin: .zero, size: pageSize)
             views.append(view)
         }
         pdfData = PDFRenderer.createPDF(from: views, pageSize: pageSize)
-
+        
         // Save PDF to Documents directory
         let filename = getDownloadsDirectory().appendingPathComponent("document.pdf")
         try? pdfData?.write(to: filename)
@@ -133,7 +135,7 @@ struct PaperView: View {
             sharePDF(pdfData)
         }
     }
-
+    
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
@@ -154,5 +156,12 @@ struct PaperView: View {
         print("DEBUG - url: \(urls[0])")
         
         return urls[0]
+    }
+    
+    func formatNumber(_ number: Int) -> String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        
+        return numberFormatter.string(from: NSNumber(value: number)) ?? "\(number)"
     }
 }

@@ -23,11 +23,13 @@ struct ContentView: View {
                         Section(
                             header: MonthHeaderView(month)
                         ) {
-                            ForEach(groupedBillImages[month]!.indices, id: \.self) { index in
-                                NavigationLink(destination: ImageScrollView(presentIndex: index)) {
-                                    Image(uiImage: groupedBillImages[month]![index].image)
-                                        .resizable()
-                                        .scaledToFit()
+                            if let bills = groupedBillImages[month] {
+                                ForEach(bills.indices, id: \.self) { index in
+                                    NavigationLink(destination: ImageScrollView(presentIndex: index)) {
+                                        Image(uiImage: bills[index].image)
+                                            .resizable()
+                                            .scaledToFit()
+                                    }
                                 }
                             }
                         }
@@ -82,7 +84,7 @@ struct ContentView: View {
             
             NavigationLink {
                 PaperView(
-                    totalCost: Int(groupedBillImages[month]!.compactMap({ Double($0.totalAmountText )}).reduce(0, +)),
+                    totalCost: "\(calculateTotalCost(groupedBillImages[month]!))",
                     month: Int(convertDateFormat(from: month) ?? "0") ?? 0,
                     imageList: groupedBillImages[month]!.map({ $0.image })
                 )
@@ -107,5 +109,19 @@ struct ContentView: View {
         let monthString = targetDateFormatter.string(from: date)
         
         return monthString
+    }
+    
+    func calculateTotalCost(_ billList: [BillImage]) -> Int {
+        return billList.compactMap { bill in
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            
+            if let number = numberFormatter.number(from: bill.totalAmountText) {
+                return number.intValue
+            } else {
+                return nil
+            }
+        }
+        .reduce(0, +)
     }
 }
