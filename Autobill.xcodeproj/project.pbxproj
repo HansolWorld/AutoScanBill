@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		660551F72C901CD600A2A438 /* extension_UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660551F62C901CD600A2A438 /* extension_UIApplication.swift */; };
 		66DBFE022C803DE300B75C08 /* PaperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DBFE012C803DE300B75C08 /* PaperView.swift */; };
 		66DBFE052C804F1800B75C08 /* PDFRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DBFE042C804F1800B75C08 /* PDFRenderer.swift */; };
 		66DBFE072C80547000B75C08 /* PrintPagePresetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DBFE062C80547000B75C08 /* PrintPagePresetView.swift */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		660551F62C901CD600A2A438 /* extension_UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = extension_UIApplication.swift; sourceTree = "<group>"; };
 		66DBFE012C803DE300B75C08 /* PaperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperView.swift; sourceTree = "<group>"; };
 		66DBFE042C804F1800B75C08 /* PDFRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFRenderer.swift; sourceTree = "<group>"; };
 		66DBFE062C80547000B75C08 /* PrintPagePresetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrintPagePresetView.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 				DBB9D43D2C0969DA00F789BC /* TextScanner.swift */,
 				FFE4B8F12BD94AB100411F5C /* LocalFileManager.swift */,
 				DBB9D4752C0A188100F789BC /* BillImage.swift */,
+				660551F62C901CD600A2A438 /* extension_UIApplication.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -185,6 +188,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				660551F72C901CD600A2A438 /* extension_UIApplication.swift in Sources */,
 				FFE4B8E62BD9433200411F5C /* ContentView.swift in Sources */,
 				DBB9D43E2C0969DA00F789BC /* TextScanner.swift in Sources */,
 				66DBFE072C80547000B75C08 /* PrintPagePresetView.swift in Sources */,
