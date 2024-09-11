@@ -13,9 +13,12 @@ struct ContentView: View {
     @Query(sort: \BillImage.date, order: .forward)
     private var billImages: [BillImage]
     private let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
-    @State private var selectedImageList: [BillImage] = []
     @State private var isSelectMode = false
+    @State private var navigateToDetailBills = false
+    @State private var selectedImageList: [BillImage] = []
+    @State private var selectedImage: [BillImage] = []
     @State private var navigateToDetail = false
+
     
     var body: some View {
         NavigationView {
@@ -31,11 +34,11 @@ struct ContentView: View {
                                     if isSelectMode {
                                         selectedImageList.removeAll(where: { $0.id == bill.id })
                                     } else {
-                                        navigateToDetail = true
+                                        navigateToDetailBills = true
                                     }
                                 }
-                                .navigationDestination(isPresented: $navigateToDetail) {
-                                    ImageScrollView(presentIndex: index)
+                                .navigationDestination(isPresented: $navigateToDetailBills) {
+                                    ImageScrollView(index: index, selectedBill: $selectedImageList)
                                 }
                         }
                     }
@@ -80,20 +83,19 @@ struct ContentView: View {
                                             }
                                         }
                                         .onTapGesture {
-                                            if
-                                                isSelectMode,
-                                                !selectedImageList.contains(where: { $0.id == bill.id })
-                                            {
-                                                selectedImageList.append(bill)
-                                            } else if selectedImageList.contains(where: { $0.id == bill.id }){
-                                                selectedImageList.removeAll(where: { $0.id == bill.id })
+                                            if isSelectMode {
+                                                if !selectedImageList.contains(where: { $0.id == bill.id }) {
+                                                    selectedImageList.append(bill)
+                                                } else {
+                                                    selectedImageList.removeAll(where: { $0.id == bill.id })
+                                                }
                                             } else {
+                                                selectedImage = [bill]
                                                 navigateToDetail = true
                                             }
                                         }
                                         .navigationDestination(isPresented: $navigateToDetail) {
-                                            let index = billImages.firstIndex(where: { $0.id == bill.id })
-                                            ImageScrollView(presentIndex: index ?? 0)
+                                            ImageScrollView(selectedBill: .constant(selectedImage))
                                         }
                                     }
                                 }
@@ -104,7 +106,7 @@ struct ContentView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationTitle("Auto bill")
                 .toolbar {
-                    ToolbarItem {
+                    ToolbarItem(placement: .topBarLeading) {
                         NavigationLink {
                             CameraView()
                                 .navigationBarBackButtonHidden()
@@ -113,7 +115,7 @@ struct ContentView: View {
                                 .foregroundStyle(.white)
                         }
                     }
-                    ToolbarItem {
+                    ToolbarItem(placement: .topBarLeading) {
                         NavigationLink {
                             EmptyView()
                         } label: {
@@ -122,7 +124,7 @@ struct ContentView: View {
                         }
                     }
                     ToolbarItem {
-                        Image(systemName: isSelectMode ? "checkmark.circle" : "checkmark.circle.fill")
+                        Text(isSelectMode ? "취소" : "선택")
                             .foregroundStyle(.white)
                             .onTapGesture {
                                 isSelectMode.toggle()
