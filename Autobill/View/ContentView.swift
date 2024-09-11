@@ -231,7 +231,7 @@ struct ContentView: View {
     }
     
     func calculateTotalCost(_ billList: [BillImage]) -> Int {
-        return billList.compactMap { bill in
+        let totalCost = billList.compactMap { bill in
             let numberFormatter = NumberFormatter()
             numberFormatter.numberStyle = .decimal
             
@@ -242,6 +242,8 @@ struct ContentView: View {
             }
         }
         .reduce(0, +)
+        
+        return totalCost >= 50000 ? 50000 : totalCost
     }
     
     func deleteBillImage(_ billList: [BillImage]) {
