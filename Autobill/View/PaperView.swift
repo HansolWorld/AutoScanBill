@@ -52,11 +52,14 @@ struct PaperView: View {
                         .keyboardType(.numberPad)
                 }
                 .font(.subheadline)
-                .border(.black)
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .padding(10)
-                .frame(maxWidth: .infinity)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .strokeBorder(.black, lineWidth: 1)
+                )
+                .padding(.horizontal, 20)
                 
                 ScrollView([.horizontal, .vertical]) {
                     PrintPagePresetView(
@@ -72,8 +75,6 @@ struct PaperView: View {
                     .scaleEffect(scale * magnification)
                     .highPriorityGesture(magnificationGesture)
                 }
-//                .highPriorityGesture(magnificationGesture)
-//                .highPriorityGesture(magnificationGesture, including: .all)
                 .frame(height: UIScreen.main.bounds.height / 3 * 2)
                 
                 Spacer()
@@ -82,9 +83,12 @@ struct PaperView: View {
                     Image(systemName: "book.pages")
                     Text("Print")
                         .font(.body)
-                        .foregroundStyle(.white)
-                        .padding()
                 }
+                .foregroundStyle(.white)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 32)
+                .background(.ppOrange)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
                 .onTapGesture {
                     generatePDF(imageList.count)
                 }
@@ -92,7 +96,7 @@ struct PaperView: View {
                 
                 HStack(spacing: 20) {
                     Image(systemName: "chevron.left")
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.black)
                         .padding(10)
                         .onTapGesture {
                             if pageIndex != 0 {
@@ -106,7 +110,7 @@ struct PaperView: View {
                         .frame(height: 15)
                     
                     Image(systemName: "chevron.right")
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.black)
                         .padding(10)
                         .onTapGesture {
                             if pageIndex + 1 < convertToTotalPage(imageList.count) {

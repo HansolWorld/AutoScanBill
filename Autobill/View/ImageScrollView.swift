@@ -11,7 +11,8 @@ import SwiftData
 struct ImageScrollView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    @State private var scrollIndex: Int
+    let selectedIndex: Int
+    @State private var scrollIndex = 0
     @State private var date = ""
     @State private var totalCost = "0"
     
@@ -19,109 +20,115 @@ struct ImageScrollView: View {
     private var billImages: [BillImage]
     @Binding var selectedBill: [BillImage]
     
-    init(index: Int = 0, selectedBill: Binding<[BillImage]>) {
-        self.scrollIndex = index
-        self._selectedBill = selectedBill
-    }
-    
     var body: some View {
-        TabView(selection: $scrollIndex) {
-            ForEach(selectedBill.indices, id: \.self) { currentIndex in
-                VStack(spacing: .zero) {
+        VStack {
+            HStack {
+                VStack(alignment: .leading) {
                     HStack {
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text("결제일:")
-                                
-                                TextField("2024-00-00", text: $date)
-                                    .keyboardType(.numbersAndPunctuation)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-
-                            HStack {
-                                Text("금액:")
-                                
-                                TextField("총 액", text: $totalCost)
-                                    .keyboardType(.numberPad)
-                                    .onChange(of: totalCost) { oldValue, newValue in
-                                        totalCost = formatNumber(input: newValue)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                        .frame(alignment: .leading)
+                        Text("결제일:")
                         
-                        Spacer()
-                        
-                        Button {
-                            guard let index = billImages.firstIndex(where: {
-                                $0.id == selectedBill[currentIndex].id
-                            }) else {
-                                return
-                            }
-                            selectedBill[currentIndex].totalAmountText = totalCost
-                            selectedBill[currentIndex].date = date
-                            billImages[index].totalAmountText = totalCost
-                            billImages[index].date = date
-                            try? context.save()
-                            
-                            if selectedBill.count == 1 {
-                                dismiss()
-                            }
-                        } label: {
-                            Text("저장")
-                        }
+                        TextField("2024-00-00", text: $date)
+                            .keyboardType(.numbersAndPunctuation)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .background(.white)
-                    .foregroundStyle(.black)                    
                     
-                    Image(uiImage: selectedBill[currentIndex].image)
-                        .resizable()
-                        .scaledToFit()
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .clipped()
-                        .padding(40)
-                        .id(currentIndex)
+                    HStack {
+                        Text("금액:")
+                        
+                        TextField("총 액", text: $totalCost)
+                            .keyboardType(.numberPad)
+                            .onChange(of: totalCost) { oldValue, newValue in
+                                totalCost = formatNumber(input: newValue)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
-                .onAppear {
-                    totalCost = selectedBill[currentIndex].totalAmountText
-                    date = selectedBill[currentIndex].date
+                .frame(alignment: .leading)
+                
+                Spacer()
+                
+                Button {
+                    guard let index = billImages.firstIndex(where: {
+                        $0.id == selectedBill[scrollIndex].id
+                    }) else {
+                        return
+                    }
+                    selectedBill[scrollIndex].totalAmountText = totalCost
+                    selectedBill[scrollIndex].date = date
+                    billImages[index].totalAmountText = totalCost
+                    billImages[index].date = date
+                    try? context.save()
+                    
+                    if selectedBill.count == 1 {
+                        dismiss()
+                    }
+                } label: {
+                    Text("수정")
                 }
             }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .foregroundStyle(.black)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(.black, lineWidth: 1)
+            )
+            .padding(.horizontal, 20)
+            
+            TabView(selection: $scrollIndex) {
+                ForEach(Array(selectedBill.enumerated()), id: \.1.id) { index, bill in
+                    VStack(spacing: .zero) {
+                        Image(uiImage: bill.image)
+                            .resizable()
+                            .scaledToFit()
+                            .aspectRatio(contentMode: .fit)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .clipped()
+                            .padding(40)
+                    }
+                    .tag(index)
+                    .padding(.horizontal, 20)
+                    .onAppear {
+                        totalCost = bill.totalAmountText
+                        date = bill.date
+                    }
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .automatic))
         }
-        .tabViewStyle(.page)
+        .background(.white)
         .toolbar {
             Image(systemName: "trash")
-                .foregroundStyle(.white)
+                .foregroundStyle(.black)
                 .onTapGesture {
-                    deleteBillImage(scrollIndex)
+                    guard let index = billImages.firstIndex(where: { $0.id == selectedBill[scrollIndex].id }) else {
+                        return
+                    }
+                    deleteBillImage(index)
                 }
         }
         .onAppear {
+            scrollIndex = selectedIndex
             UIApplication.shared.hideKeyboard()
+            UIPageControl.appearance().currentPageIndicatorTintColor = .ppOrange
+            UIPageControl.appearance().pageIndicatorTintColor = UIColor.black.withAlphaComponent(0.2)
         }
     }
     
     func deleteBillImage(_ index: Int) {
-        for image in billImages {
-            if image.id == billImages[index].id {
-                context.delete(billImages[index])
-            }
-        }
+        context.delete(billImages[index])
     }
     
     private func formatNumber(input: String) -> String {
         let filtered = input.filter { "0123456789.".contains($0) }
-
+        
         if let number = Double(filtered) {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
-            formatter.maximumFractionDigits = 2 // 소수점 2자리까지 설정
+            formatter.maximumFractionDigits = 2
             return formatter.string(from: NSNumber(value: number)) ?? input
         }
         
         return input
-
     }
 }

@@ -14,15 +14,16 @@ struct ContentView: View {
     private var billImages: [BillImage]
     private let gridItem = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
     @State private var isSelectMode = false
-    @State private var navigateToDetailBills = false
     @State private var selectedImageList: [BillImage] = []
-    @State private var selectedImage: [BillImage] = []
+    @State private var billSetForNavigate: [BillImage] = []
     @State private var navigateToDetail = false
-
+    @State private var selectImageIndex = 0
     
     var body: some View {
-        NavigationView {
-            VStack {
+        VStack {
+            Spacer()
+                .frame(height: 1)
+            if !selectedImageList.isEmpty {
                 ScrollView(.horizontal) {
                     HStack(spacing: 10) {
                         ForEach(Array(selectedImageList.enumerated()), id: \.1.id) { index, bill in
@@ -30,108 +31,118 @@ struct ContentView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 100, height: 100)
+                                .overlay(
+                                    Rectangle()
+                                        .strokeBorder(.black, lineWidth: 1)
+                                )
                                 .onTapGesture {
                                     if isSelectMode {
                                         selectedImageList.removeAll(where: { $0.id == bill.id })
                                     } else {
-                                        navigateToDetailBills = true
+                                        selectImageIndex = index
+                                        billSetForNavigate = selectedImageList
+                                        navigateToDetail = true
                                     }
                                 }
-                                .navigationDestination(isPresented: $navigateToDetailBills) {
-                                    ImageScrollView(index: index, selectedBill: $selectedImageList)
-                                }
                         }
                     }
+                    .padding(.horizontal, 20)
                 }
-                
-                if !selectedImageList.isEmpty {
-                    NavigationLink {
-                        PaperView(
-                            totalCost: "\(calculateTotalCost(selectedImageList))",
-                            month: Calendar.current.component(.month, from: Date()),
-                            imageList: selectedImageList.map({ $0.image })
-                        )
-                    } label: {
-                        Text("스캔하러가기")
-                            .padding(.vertical, 12)
-                            .padding(.horizontal, 32)
-                            .background(.green)
-                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                    }
-                }
-                
-                ScrollView {
-                    LazyVGrid(columns: gridItem, alignment: .leading, pinnedViews: .sectionHeaders) {
-                        ForEach(groupedBillImages.keys.sorted(), id: \.self) { month in
-                            Section(
-                                header: MonthHeaderView(month)
-                            ) {
-                                if let bills = groupedBillImages[month] {
-                                    ForEach(Array(bills.enumerated()), id: \.1.id) { index, bill in
-                                        ZStack {
-                                            Image(uiImage: bill.image)
-                                                .resizable()
-                                                .scaledToFit()
-                                            
-                                            if selectedImageList.contains(where: { $0.id == bill.id }) {
-                                                Text("선택된 이미지")
-                                                    .foregroundStyle(.white)
-                                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                                    .background {
-                                                        Color.black.opacity(0.3)
-                                                    }
-                                            }
-                                        }
-                                        .onTapGesture {
-                                            if isSelectMode {
-                                                if !selectedImageList.contains(where: { $0.id == bill.id }) {
-                                                    selectedImageList.append(bill)
-                                                } else {
-                                                    selectedImageList.removeAll(where: { $0.id == bill.id })
-                                                }
-                                            } else {
-                                                selectedImage = [bill]
-                                                navigateToDetail = true
-                                            }
-                                        }
-                                        .navigationDestination(isPresented: $navigateToDetail) {
-                                            ImageScrollView(selectedBill: .constant(selectedImage))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationTitle("Auto bill")
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        NavigationLink {
-                            CameraView()
-                                .navigationBarBackButtonHidden()
-                        } label: {
-                            Image(systemName: "camera")
-                                .foregroundStyle(.white)
-                        }
-                    }
-                    ToolbarItem(placement: .topBarLeading) {
-                        NavigationLink {
-                            EmptyView()
-                        } label: {
-                            Image(systemName: "photo.badge.plus")
-                                .foregroundStyle(.white)
-                        }
-                    }
-                    ToolbarItem {
-                        Text(isSelectMode ? "취소" : "선택")
-                            .foregroundStyle(.white)
-                            .onTapGesture {
-                                isSelectMode.toggle()
-                            }
-                    }
+                .background(.gray.opacity(0.7))
+            }
+            
+            if !selectedImageList.isEmpty {
+                NavigationLink {
+                    PaperView(
+                        totalCost: "\(calculateTotalCost(selectedImageList))",
+                        month: Calendar.current.component(.month, from: Date()),
+                        imageList: selectedImageList.map({ $0.image })
+                    )
+                } label: {
+                    Text("스캔하러가기")
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 32)
+                        .background(.ppOrange)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
             }
+            
+            ScrollView {
+                LazyVGrid(columns: gridItem, alignment: .leading, pinnedViews: .sectionHeaders) {
+                    ForEach(groupedBillImages.keys.sorted(), id: \.self) { month in
+                        Section(
+                            header: MonthHeaderView(month)
+                        ) {
+                            if let bills = groupedBillImages[month] {
+                                ForEach(Array(bills.enumerated()), id: \.1.id) { index, bill in
+                                    ZStack {
+                                        Image(uiImage: bill.image)
+                                            .resizable()
+                                            .scaledToFit()
+                                        
+                                        if selectedImageList.contains(where: { $0.id == bill.id }) {
+                                            Text("선택된 이미지")
+                                                .foregroundStyle(.white)
+                                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                                .background {
+                                                    Color.black.opacity(0.3)
+                                                }
+                                        }
+                                    }
+                                    .onTapGesture {
+                                        if isSelectMode {
+                                            if !selectedImageList.contains(where: { $0.id == bill.id }) {
+                                                selectedImageList.append(bill)
+                                            } else {
+                                                selectedImageList.removeAll(where: { $0.id == bill.id })
+                                            }
+                                        } else {
+                                            billSetForNavigate = [bill]
+                                            selectImageIndex = 0
+                                            navigateToDetail = true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Auto bill")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        CameraView()
+                            .navigationBarBackButtonHidden()
+                    } label: {
+                        Image(systemName: "camera")
+                            .foregroundStyle(.black)
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        EmptyView()
+                    } label: {
+                        Image(systemName: "photo.badge.plus")
+                            .foregroundStyle(.black)
+                    }
+                }
+                
+                ToolbarItem {
+                    Text(isSelectMode ? "취소" : "선택")
+                        .foregroundStyle(.black)
+                        .onTapGesture {
+                            isSelectMode.toggle()
+                        }
+                }
+            }
+        }
+        .navigationDestination(isPresented: $navigateToDetail) {
+            ImageScrollView(selectedIndex: selectImageIndex, selectedBill: .constant(billSetForNavigate))
         }
     }
     

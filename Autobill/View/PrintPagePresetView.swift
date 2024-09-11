@@ -33,14 +33,7 @@ struct PrintPagePresetView: View {
     ]
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if preview {
-                Rectangle()
-                    .fill(.clear)
-                    .strokeBorder(.gray, style: .init(lineWidth: 1, dash: [20]))
-                    .frame(width: 595.2, height: 841.8, alignment: .top)
-            }
-
+        VStack {
             VStack(alignment: .trailing, spacing: 20) {
                 Text("\(teamName) \(name), \(category), \(month)월, \(totalCost)원")
                     .font(.subheadline)
@@ -60,10 +53,10 @@ struct PrintPagePresetView: View {
                 }
             }
             .frame(width: 595.2, height: 841.8, alignment: .top)
+            .background(.white)
         }
-        .frame(width: preview ? 1000 : 595.2, height: preview ? 1000 : 841.8, alignment: .top)
-        //        .frame(width: preview ? nil : 595.2, height: preview ? nil : 841.8, alignment: .top) // A4 size
+        .frame(width: preview ? 1000 : 595.2, height: preview ? 1000 : 841.8, alignment: .center)
         .foregroundStyle(.black)
-        .background(.white)
+        .background(preview ? .gray.opacity(0.5) : .white)
     }
 }
