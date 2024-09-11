@@ -51,7 +51,7 @@ struct PrintPagePresetView: View {
                         Image(uiImage: imageList[index])
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 198.4, height: 198.4 * 1.414)
+                            .frame(width: 198.4, height: 198.4 * 1.8)
                             .overlay(
                                 Rectangle()
                                     .strokeBorder(.black, lineWidth: 1)
