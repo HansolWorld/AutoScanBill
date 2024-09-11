@@ -70,8 +70,10 @@ struct PaperView: View {
                         preview: true
                     )
                     .scaleEffect(scale * magnification)
-                    .gesture(magnificationGesture)
+                    .highPriorityGesture(magnificationGesture)
                 }
+//                .highPriorityGesture(magnificationGesture)
+//                .highPriorityGesture(magnificationGesture, including: .all)
                 .frame(height: UIScreen.main.bounds.height / 3 * 2)
                 
                 Spacer()

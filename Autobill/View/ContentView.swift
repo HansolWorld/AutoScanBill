@@ -65,20 +65,36 @@ struct ContentView: View {
                             ) {
                                 if let bills = groupedBillImages[month] {
                                     ForEach(Array(bills.enumerated()), id: \.1.id) { index, bill in
-                                        Image(uiImage: bill.image)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .onTapGesture {
-                                                if isSelectMode {
-                                                    selectedImageList.append(bill)
-                                                } else {
-                                                    navigateToDetail = true
-                                                }
+                                        ZStack {
+                                            Image(uiImage: bill.image)
+                                                .resizable()
+                                                .scaledToFit()
+                                            
+                                            if selectedImageList.contains(where: { $0.id == bill.id }) {
+                                                Text("선택된 이미지")
+                                                    .foregroundStyle(.white)
+                                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                                    .background {
+                                                        Color.black.opacity(0.3)
+                                                    }
                                             }
-                                            .navigationDestination(isPresented: $navigateToDetail) {
-                                                let index = billImages.firstIndex(where: { $0.id == bill.id })
-                                                ImageScrollView(presentIndex: index ?? 0)
+                                        }
+                                        .onTapGesture {
+                                            if
+                                                isSelectMode,
+                                                !selectedImageList.contains(where: { $0.id == bill.id })
+                                            {
+                                                selectedImageList.append(bill)
+                                            } else if selectedImageList.contains(where: { $0.id == bill.id }){
+                                                selectedImageList.removeAll(where: { $0.id == bill.id })
+                                            } else {
+                                                navigateToDetail = true
                                             }
+                                        }
+                                        .navigationDestination(isPresented: $navigateToDetail) {
+                                            let index = billImages.firstIndex(where: { $0.id == bill.id })
+                                            ImageScrollView(presentIndex: index ?? 0)
+                                        }
                                     }
                                 }
                             }
