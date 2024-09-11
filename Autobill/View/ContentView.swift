@@ -111,7 +111,7 @@ struct ContentView: View {
                 .padding(.horizontal, 20)
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationTitle("Auto bill")
+            .navigationTitle("피피 영수증")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     NavigationLink {

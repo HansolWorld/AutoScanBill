@@ -17,15 +17,9 @@ struct PaperView: View {
     @State private var category = "커피는"
     @State var totalCost: String
     let month: Int
-    
-    let columns = [
-        GridItem(.fixed(56), spacing: 0),
-        GridItem(.fixed(56), spacing: 0),
-        GridItem(.fixed(56), spacing: 0)
-    ]
     let imageList: [UIImage]
     
-    @State private var scale = 3.0
+    @State private var scale = 1.0
     @GestureState private var magnification = 1.0
 
     var magnificationGesture: some Gesture {
