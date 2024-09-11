@@ -18,20 +18,21 @@ struct PaperView: View {
     @State var totalCost: String
     let month: Int
     let imageList: [UIImage]
+    @State private var isLoading = false
     
     @State private var scale = 1.0
     @GestureState private var magnification = 1.0
-
+    
     var magnificationGesture: some Gesture {
-      MagnifyGesture()
-        .updating($magnification) { value, gestureState, transaction in
-          gestureState = value.magnification
-        }
-        .onEnded { value in
-          self.scale *= value.magnification
-        }
+        MagnifyGesture()
+            .updating($magnification) { value, gestureState, transaction in
+                gestureState = value.magnification
+            }
+            .onEnded { value in
+                self.scale *= value.magnification
+            }
     }
-
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -73,20 +74,30 @@ struct PaperView: View {
                 
                 Spacer()
                 
-                HStack {
-                    Image(systemName: "book.pages")
-                    Text("Print")
-                        .font(.body)
+                ZStack {
+                    HStack {
+                        Image(systemName: "book.pages")
+                        Text("Print")
+                            .font(.body)
+                    }
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 32)
+                    .background(.ppDarkGray)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .onTapGesture {
+                        guard !isLoading else {
+                            return
+                        }
+                        generatePDF(imageList.count)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    if isLoading {
+                        ProgressView()
+                            .controlSize(.large)
+                    }
                 }
-                .foregroundStyle(.white)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 32)
-                .background(.ppOrange)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .onTapGesture {
-                    generatePDF(imageList.count)
-                }
-                .frame(maxWidth: .infinity)
                 
                 HStack(spacing: 20) {
                     Image(systemName: "chevron.left")
@@ -125,6 +136,7 @@ struct PaperView: View {
     }
     
     func generatePDF(_ totalCount: Int) {
+        isLoading = true
         var views: [UIView] = []
         let pageSize = CGSize(width: 595.2, height: 841.8) // A4 size in points
         
@@ -153,6 +165,8 @@ struct PaperView: View {
         // Share PDF
         if let pdfData {
             sharePDF(pdfData)
+        } else {
+            isLoading = false
         }
     }
     
@@ -165,6 +179,7 @@ struct PaperView: View {
         let activityViewController = UIActivityViewController(activityItems: [pdfData], applicationActivities: nil)
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = scene.windows.first?.rootViewController {
+            isLoading = false
             rootViewController.present(activityViewController, animated: true, completion: nil)
         }
     }

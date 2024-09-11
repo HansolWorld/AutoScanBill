@@ -19,6 +19,7 @@ struct ImageScrollView: View {
     @Query(sort: \BillImage.createdDate, order: .forward)
     private var billImages: [BillImage]
     @Binding var selectedBill: [BillImage]
+    var onDeleteBill: ((BillImage) -> Void) = { _ in }
     
     var body: some View {
         VStack {
@@ -88,10 +89,6 @@ struct ImageScrollView: View {
                     }
                     .tag(index)
                     .padding(.horizontal, 20)
-                    .onAppear {
-                        totalCost = bill.totalAmountText
-                        date = bill.date
-                    }
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
@@ -105,12 +102,23 @@ struct ImageScrollView: View {
                         return
                     }
                     deleteBillImage(index)
+                    onDeleteBill(selectedBill[scrollIndex])
+                    selectedBill.remove(at: scrollIndex)
+                    if selectedBill.isEmpty {
+                        dismiss()
+                    }
                 }
+        }
+        .onChange(of: scrollIndex) { oldValue, newValue in
+            totalCost = selectedBill[newValue].totalAmountText
+            date = selectedBill[newValue].date
         }
         .onAppear {
             scrollIndex = selectedIndex
+            date = selectedBill[selectedIndex].date
+            totalCost = selectedBill[selectedIndex].totalAmountText
             UIApplication.shared.hideKeyboard()
-            UIPageControl.appearance().currentPageIndicatorTintColor = .ppOrange
+            UIPageControl.appearance().currentPageIndicatorTintColor = .black
             UIPageControl.appearance().pageIndicatorTintColor = UIColor.black.withAlphaComponent(0.2)
         }
     }
