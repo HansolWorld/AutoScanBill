@@ -26,40 +26,43 @@ struct PrintPagePresetView: View {
 
     // width 198.4
         // height 279.744
-    let previewColumns = [
-        GridItem(.fixed(56), spacing: 0),
-        GridItem(.fixed(56), spacing: 0),
-        GridItem(.fixed(56), spacing: 0)
-    ]
-    
     let printColumns = [
         GridItem(.fixed(198.4), spacing: 0),
         GridItem(.fixed(198.4), spacing: 0),
         GridItem(.fixed(198.4), spacing: 0)
     ]
-
+    
     var body: some View {
-        VStack(alignment: .trailing, spacing: 20) {
-            Text("\(teamName) \(name), \(category), \(month)월, \(totalCost)원")
-                .font(.subheadline)
-                .padding(.trailing, 10)
-                .frame(height: 30)
-            
-            LazyVGrid(columns: preview ? previewColumns : printColumns, spacing: 1) {
-                ForEach(itemRange, id: \.self) { index in
-                    Image(uiImage: imageList[index])
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: preview ? 56 : 198.4, height: preview ? 105 : 198.4 * 1.414)
-                        .overlay(
-                            Rectangle()
-                                .strokeBorder(.black, lineWidth: 1)
-                        )
+        ZStack(alignment: .topLeading) {
+            if preview {
+                Rectangle()
+                    .fill(.clear)
+                    .strokeBorder(.gray, style: .init(lineWidth: 1, dash: [20]))
+                    .frame(width: 595.2, height: 841.8, alignment: .top)
+            }
+
+            VStack(alignment: .trailing, spacing: 20) {
+                Text("\(teamName) \(name), \(category), \(month)월, \(totalCost)원")
+                    .font(.subheadline)
+                    .padding(.trailing, 10)
+                    .frame(height: 30)
+                LazyVGrid(columns: printColumns, spacing: 1) {
+                    ForEach(itemRange, id: \.self) { index in
+                        Image(uiImage: imageList[index])
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 198.4, height: 198.4 * 1.414)
+                            .overlay(
+                                Rectangle()
+                                    .strokeBorder(.black, lineWidth: 1)
+                            )
+                    }
                 }
             }
-            .frame(idealWidth: preview ? nil : 595.2, maxWidth: .infinity)
+            .frame(width: 595.2, height: 841.8, alignment: .top)
         }
-        .frame(width: preview ? nil : 595.2, height: preview ? nil : 841.8, alignment: .top) // A4 size
+        .frame(width: preview ? 1000 : 595.2, height: preview ? 1000 : 841.8, alignment: .top)
+        //        .frame(width: preview ? nil : 595.2, height: preview ? nil : 841.8, alignment: .top) // A4 size
         .foregroundStyle(.black)
         .background(.white)
     }

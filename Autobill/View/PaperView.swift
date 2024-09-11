@@ -25,75 +25,95 @@ struct PaperView: View {
     ]
     let imageList: [UIImage]
     
+    @State private var scale = 3.0
+    @GestureState private var magnification = 1.0
+
+    var magnificationGesture: some Gesture {
+      MagnifyGesture()
+        .updating($magnification) { value, gestureState, transaction in
+          gestureState = value.magnification
+        }
+        .onEnded { value in
+          self.scale *= value.magnification
+        }
+    }
+
     var body: some View {
-        VStack(alignment: .trailing) {
-            HStack(spacing: 8) {
-                TextField("팀 이름", text: $teamName)
+        ScrollView {
+            VStack(alignment: .leading) {
+                HStack(spacing: 8) {
+                    TextField("팀 이름", text: $teamName)
+                    
+                    TextField("이름", text: $name)
+                    
+                    TextField("커피는, 60계, 스텔라", text: $category)
+                    
+                    TextField("총 액", text: $totalCost)
+                        .keyboardType(.numberPad)
+                }
+                .font(.subheadline)
+                .border(.black)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
+                .padding(10)
+                .frame(maxWidth: .infinity)
                 
-                TextField("이름", text: $name)
+                ScrollView([.horizontal, .vertical]) {
+                    PrintPagePresetView(
+                        pageIndex: pageIndex,
+                        imageList: imageList,
+                        teamName: teamName,
+                        name: name,
+                        category: category,
+                        totalCost: formatNumber(Int(totalCost) ?? 0),
+                        month: month,
+                        preview: true
+                    )
+                    .scaleEffect(scale * magnification)
+                    .gesture(magnificationGesture)
+                }
+                .frame(height: UIScreen.main.bounds.height / 3 * 2)
                 
-                TextField("커피는, 60계, 스텔라", text: $category)
+                Spacer()
                 
-                TextField("총 액", text: $totalCost)
-                    .keyboardType(.numberPad)
-            }
-            .font(.subheadline)
-            .border(.black)
-            .autocorrectionDisabled()
-            .textInputAutocapitalization(.never)
-            .padding(10)
-            .frame(maxWidth: .infinity)
-            
-            PrintPagePresetView(
-                pageIndex: pageIndex,
-                imageList: imageList,
-                teamName: teamName,
-                name: name,
-                category: category,
-                totalCost: formatNumber(Int(totalCost) ?? 0),
-                month: month,
-                preview: true
-            )
-            
-            Spacer()
-            
-            HStack {
-                Image(systemName: "book.pages")
-                Text("Print")
-                    .font(.body)
-                    .foregroundStyle(.white)
-                    .padding()
-            }
-            .onTapGesture {
-                generatePDF(imageList.count)
-            }
-            .frame(maxWidth: .infinity)
-            
-            HStack(spacing: 20) {
-                Image(systemName: "chevron.left")
-                    .foregroundStyle(.white)
-                    .padding(10)
-                    .onTapGesture {
-                        if pageIndex != 0 {
-                            pageIndex -= 1
+                HStack {
+                    Image(systemName: "book.pages")
+                    Text("Print")
+                        .font(.body)
+                        .foregroundStyle(.white)
+                        .padding()
+                }
+                .onTapGesture {
+                    generatePDF(imageList.count)
+                }
+                .frame(maxWidth: .infinity)
+                
+                HStack(spacing: 20) {
+                    Image(systemName: "chevron.left")
+                        .foregroundStyle(.white)
+                        .padding(10)
+                        .onTapGesture {
+                            if pageIndex != 0 {
+                                pageIndex -= 1
+                            }
                         }
-                    }
-                
-                
-                Text("\(pageIndex + 1) / \(convertToTotalPage(imageList.count))")
-                    .font(.caption)
-                    .frame(height: 15)
-                
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(.white)
-                    .padding(10)
-                    .onTapGesture {
-                        if pageIndex + 1 < convertToTotalPage(imageList.count) {
-                            pageIndex += 1
+                    
+                    
+                    Text("\(pageIndex + 1) / \(convertToTotalPage(imageList.count))")
+                        .font(.caption)
+                        .frame(height: 15)
+                    
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.white)
+                        .padding(10)
+                        .onTapGesture {
+                            if pageIndex + 1 < convertToTotalPage(imageList.count) {
+                                pageIndex += 1
+                            }
                         }
-                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity)
         }
     }
     
