@@ -9,56 +9,134 @@ import SwiftUI
 import SwiftData
 
 struct ImageScrollView: View {
-    
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    @State private var scrollIndex: Int
-    private var presentIndex: Int
+    let selectedIndex: Int
+    @State private var scrollIndex = 0
+    @State private var date = ""
+    @State private var totalCost = "0"
     
     @Query(sort: \BillImage.createdDate, order: .forward)
     private var billImages: [BillImage]
-    
-    init(presentIndex: Int) {
-        self.presentIndex = presentIndex
-        self._scrollIndex = State(initialValue: presentIndex)
-    }
+    @Binding var selectedBill: [BillImage]
+    var onDeleteBill: ((BillImage) -> Void) = { _ in }
     
     var body: some View {
-        TabView(selection: $scrollIndex) {
-            ForEach(billImages.indices, id: \.self) { index in
-                VStack(spacing: .zero) {
-//                    TextField(billImages[index].totalAmountText)
-//                    TextEditor(text: .constant(billImages[index].totalAmountText))
-                    Text("결제일 \(billImages[index].date)")
-                    Text("\(billImages[index].totalAmountText) 원")
-                    Image(uiImage: billImages[index].image)
-                        .resizable()
-                        .scaledToFit()
-                        .aspectRatio(contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .clipped()
-                        .padding(40)
-                        .id(index)
+        VStack {
+            HStack {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text("결제일:")
+                        
+                        TextField("2024-00-00", text: $date)
+                            .keyboardType(.numbersAndPunctuation)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    
+                    HStack {
+                        Text("금액:")
+                        
+                        TextField("총 액", text: $totalCost)
+                            .keyboardType(.numberPad)
+                            .onChange(of: totalCost) { oldValue, newValue in
+                                totalCost = formatNumber(input: newValue)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .frame(alignment: .leading)
+                
+                Spacer()
+                
+                Button {
+                    guard let index = billImages.firstIndex(where: {
+                        $0.id == selectedBill[scrollIndex].id
+                    }) else {
+                        return
+                    }
+                    selectedBill[scrollIndex].totalAmountText = totalCost
+                    selectedBill[scrollIndex].date = date
+                    billImages[index].totalAmountText = totalCost
+                    billImages[index].date = date
+                    try? context.save()
+                    
+                    if selectedBill.count == 1 {
+                        dismiss()
+                    }
+                } label: {
+                    Text("수정")
                 }
             }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .foregroundStyle(.black)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(.black, lineWidth: 1)
+            )
+            .padding(.horizontal, 20)
+            
+            TabView(selection: $scrollIndex) {
+                ForEach(Array(selectedBill.enumerated()), id: \.1.id) { index, bill in
+                    VStack(spacing: .zero) {
+                        Image(uiImage: bill.image)
+                            .resizable()
+                            .scaledToFit()
+                            .aspectRatio(contentMode: .fit)
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .clipped()
+                            .padding(40)
+                    }
+                    .tag(index)
+                    .padding(.horizontal, 20)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .automatic))
         }
-        .tabViewStyle(.page)
+        .background(.white)
         .toolbar {
             Image(systemName: "trash")
-                .foregroundStyle(.white)
+                .foregroundStyle(.black)
                 .onTapGesture {
-                    deleteBillImage(scrollIndex)
+                    guard let index = billImages.firstIndex(where: { $0.id == selectedBill[scrollIndex].id }) else {
+                        return
+                    }
+                    deleteBillImage(index)
+                    onDeleteBill(selectedBill[scrollIndex])
+                    selectedBill.remove(at: scrollIndex)
+                    if selectedBill.isEmpty {
+                        dismiss()
+                    }
                 }
         }
+        .onChange(of: scrollIndex) { oldValue, newValue in
+            totalCost = selectedBill[newValue].totalAmountText
+            date = selectedBill[newValue].date
+        }
         .onAppear {
-            scrollIndex = presentIndex
+            scrollIndex = selectedIndex
+            date = selectedBill[selectedIndex].date
+            totalCost = selectedBill[selectedIndex].totalAmountText
+            UIApplication.shared.hideKeyboard()
+            UIPageControl.appearance().currentPageIndicatorTintColor = .black
+            UIPageControl.appearance().pageIndicatorTintColor = UIColor.black.withAlphaComponent(0.2)
         }
     }
     
     func deleteBillImage(_ index: Int) {
-        for image in billImages {
-            if image.id == billImages[index].id {
-                context.delete(billImages[index])
-            }
+        context.delete(billImages[index])
+    }
+    
+    private func formatNumber(input: String) -> String {
+        let filtered = input.filter { "0123456789.".contains($0) }
+        
+        if let number = Double(filtered) {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.maximumFractionDigits = 2
+            return formatter.string(from: NSNumber(value: number)) ?? input
         }
+        
+        return input
     }
 }

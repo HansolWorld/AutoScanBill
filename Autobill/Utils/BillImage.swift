@@ -10,7 +10,6 @@ import UIKit.UIImage
 
 @Model
 final class BillImage {
-    
     @Attribute(.unique) private(set) var id = UUID()
     
     var imageData: Data
